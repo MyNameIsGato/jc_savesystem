@@ -4,6 +4,11 @@ on:
   push:
     tags: [v*, rc-*, build-*]
 
+permissions:
+  contents: read
+  actions: read
+  checks: write
+
 env:
   GODOT_VERSION: 4.5.1
   PROJECT_PATH: .
@@ -49,7 +54,7 @@ jobs:
         id: lint
         continue-on-error: true
         run: |
-          gdlint scenes/ || echo "lint_failed=true" >> $GITHUB_OUTPUT
+          gdlint addons/ || echo "lint_failed=true" >> $GITHUB_OUTPUT
 
   test:
     name: Run GDScript Tests
