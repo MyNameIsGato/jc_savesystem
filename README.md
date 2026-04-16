@@ -35,6 +35,7 @@ SaveCoordinator.save_game()
 # Later, when loading:
 SaveCoordinator.load_game()
 var health = SaveCoordinator.get_data(&"player_health", 100)
+```
 
 ## API
 
