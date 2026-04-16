@@ -1,0 +1,86 @@
+name: Godot CI/CD Pipeline
+
+on:
+  push:
+    tags: [v*, rc-*, build-*]
+
+env:
+  GODOT_VERSION: 4.5.1
+  PROJECT_PATH: .
+
+jobs:
+  version:
+    name: Calculate Semantic Version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.gitversion.outputs.version }}
+      version_major: ${{ steps.gitversion.outputs.version_major }}
+      version_minor: ${{ steps.gitversion.outputs.version_minor }}
+      version_patch: ${{ steps.gitversion.outputs.version_patch }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0  # Required for git-version to work properly
+
+      - name: Calculate Git Version
+        id: gitversion
+        uses: codacy/git-version@2.7.1
+        with:
+          release-branch: main
+          prefix: 'v'
+          minor-identifier: /(?i)^minor:/
+          major-identifier: /(?i)^major:/
+
+      - name: Display Version
+        run: |
+          echo "Version: ${{ steps.gitversion.outputs.version }}"
+
+  lint:
+    name: Lint GDScript Files
+    runs-on: ubuntu-latest
+    needs: version
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+      - uses: Scony/godot-gdscript-toolkit@master
+
+      - name: Run gdlint on scenes folder
+        id: lint
+        continue-on-error: true
+        run: |
+          gdlint scenes/ || echo "lint_failed=true" >> $GITHUB_OUTPUT
+
+  test:
+    name: Run GDScript Tests
+    runs-on: ubuntu-latest
+    needs: [version, lint]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Run GUnit4 Tests
+        id: test
+        continue-on-error: false
+        uses: godot-gdunit-labs/gdUnit4-action@v1
+        with:
+          godot-version: ${{ env.GODOT_VERSION }}
+          paths: "res://tests/"
+  
+  release:
+    name: Release Build
+    needs: [version, lint, test]
+    permissions:
+        contents: write
+    env:
+      FILE_NAME: ${{ github.event.repository.name }}-${{ needs.version.outputs.version }}.zip
+    steps:
+      - uses: actions/upload-artifact@v7
+        with:
+          name: $FILE_NAME.zip
+          overwrite: true
+      - uses: actions/checkout@v6
+      - uses: ncipollo/release-action@v1
+        with:
+          artifacts: "$FILE_NAME.zip"
+          generateReleaseNotes: true
