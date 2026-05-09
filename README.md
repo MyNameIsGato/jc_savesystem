@@ -48,6 +48,7 @@ static func set_data(key: StringName, value: Variant, override: bool = true) -> 
 static func get_data(key: StringName, default: Variant) -> Variant # Retrieves data stored under key, or default if it wasn't stored.
 static func reset() -> void # Resets the currently loaded data to a blank state.
 static func change_path(path: String) -> bool # Changes the path in the Coordinator to handle navigating multiple files. Returns false if the path is empty.
+static func save_exists() -> bool # Returns true if data has been successfully loaded from the current path.
 ```
 
 ## TODO:

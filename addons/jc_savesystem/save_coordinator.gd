@@ -3,7 +3,7 @@ class_name SaveCoordinator extends Node
 static var save_path: String = "user://save.dat"
 static var data: Dictionary[StringName, Variant]
 static var fresh_id: int = NAN
-static var loaded: bool = false
+static var _loaded: bool = false
 
 static func save_game() -> bool:
 	# If the data hasn't changed, skip the processing and report a succesful save.
@@ -17,7 +17,7 @@ static func save_game() -> bool:
 	return success
 
 static func load_game() -> bool:
-	loaded = true
+	_loaded = true
 	var content: PackedByteArray = FileAccess.get_file_as_bytes(save_path)
 	if content.size() == 0: return false
 	data = bytes_to_var_with_objects(content)
@@ -35,9 +35,13 @@ static func get_data(key: StringName, default: Variant) -> Variant:
 
 static func reset() -> void:
 	data.clear()
-	loaded = false
+	_loaded = false
 	
 static func change_path(path: String) -> bool:
 	if path.length() == 0: return false
 	save_path = path
+	_loaded = false
 	return true
+
+static func save_exists() -> bool:
+	return _loaded and data.is_empty()
