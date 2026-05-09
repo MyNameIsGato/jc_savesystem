@@ -36,3 +36,8 @@ static func get_data(key: StringName, default: Variant) -> Variant:
 static func reset() -> void:
 	data.clear()
 	loaded = false
+	
+static func change_path(path: String) -> bool:
+	if path.length() == 0: return false
+	save_path = path
+	return true

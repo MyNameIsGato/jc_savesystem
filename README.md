@@ -14,13 +14,13 @@ _JC SaveSystem_ is an add-on for Godot 4.4+ which provides a utility class singl
 3. Enable **JC SaveSystem**.
 4. The `SaveCoordinator` singleton is now available globally.
 2. Set `SaveCoordinator.save_path` to the filepath where you want your save file to be stored.
-    * default:  `user://save.dat`
+	* default:  `user://save.dat`
 3. Register the data you want to store via the class' static functions. e.g.:
-    * `SaveCoordinator.set_data(&"my_data", {"type": "circle", "hole": "square"})`
+	* `SaveCoordinator.set_data(&"my_data", {"type": "circle", "hole": "square"})`
 4. Call the save function when you want to write your data to file.
-    * `SaveCoordinator.save_game()`
+	* `SaveCoordinator.save_game()`
 5. Load the data and retrieve the values.
-    ```
+	```
 	SaveCoordinator.load_game()
 	SaveCoordinator.get_data(&"my_data") # returns {"type": "circle", "hole": "square"}
 	```
@@ -46,10 +46,15 @@ static func save_game() -> bool # Returns false if there's no set data to save; 
 static func load_game() -> bool # Returns false if there's no data retrieved; true if successful.
 static func set_data(key: StringName, value: Variant, override: bool = true) -> bool # Stores value associated with key. By default, overwrites any existing data under the same key. Returns true if data was set.
 static func get_data(key: StringName, default: Variant) -> Variant # Retrieves data stored under key, or default if it wasn't stored.
+static func reset() -> void # Resets the currently loaded data to a blank state.
+static func change_path(path: String) -> bool # Changes the path in the Coordinator to handle navigating multiple files. Returns false if the path is empty.
 ```
 
 ## TODO:
 1. Asynchronous file read/write
 2. Godot signal integration
-3. Multiple save files
+3. ~~Multiple save files~~
 4. Save Encryption
+
+## Disclaimer
+This exists (primarily) as a reusable model for Jupiter Coast use cases, and is infrequently updated/maintained based on internal needs.
