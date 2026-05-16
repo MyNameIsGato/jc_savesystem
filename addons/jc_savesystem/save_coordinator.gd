@@ -11,6 +11,7 @@ static func save_game() -> bool:
 	if id == fresh_id: return true
 	var to_save: PackedByteArray = var_to_bytes_with_objects(data)
 	if to_save.size() == 0: return false
+	_loaded = true
 	var file: FileAccess = FileAccess.open(save_path, FileAccess.WRITE)
 	var success: bool = file.store_buffer(to_save)
 	if success: fresh_id = id
