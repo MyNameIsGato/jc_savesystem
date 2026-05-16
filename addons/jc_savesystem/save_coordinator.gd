@@ -44,4 +44,4 @@ static func change_path(path: String) -> bool:
 	return true
 
 static func save_exists() -> bool:
-	return _loaded and data.is_empty()
+	return _loaded and !data.is_empty()
